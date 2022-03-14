@@ -52,8 +52,6 @@ public class BossMovement : MonoBehaviour
             {
                 case State.Idle:
                     StartCoroutine(BossIdleCoroutine());
-                    index = Random.Range(0,bossAtkPos.Length);
-                    bossNxtPos = bossAtkPos[index];
                     BossStates(State.MeeleCharge);
                     break;
 
@@ -72,35 +70,42 @@ public class BossMovement : MonoBehaviour
     }
 
 
+    //Coroutine for the Boss' idle time.
     IEnumerator BossIdleCoroutine()
     {
         idleState = true;
 
         yield return new WaitForSeconds(3);
-
-        transform.position = Vector3.MoveTowards(transform.position,targetPlayer.transform.position, movementSpeed);
+        
+        transform.position = Vector3.MoveTowards(transform.position,targetPlayer.transform.position, movementSpeed);    //Boss object dashes towards player
+        index = Random.Range(0,bossAtkPos.Length);
+        bossNxtPos = bossAtkPos[index];
         idleState = false;
     
 
-        yield return StartCoroutine(BossAttack1Coroutine());
+        yield return StartCoroutine(BossAttack1Coroutine());                                                            //Makes sure that the coroutine loops
     }
 
+    //Coroutine for the Boss' attack state
+    //Boss object is supposed to reposition itself to one of the cardinal points(withoui teleporting) and should dash towards the player()again without teleporting
     IEnumerator BossAttack1Coroutine()
     {
         attack1 = true;
         while(transform.position != bossAtkPos[index].transform.position)
         {
-            transform.position = Vector3.MoveTowards(transform.position,bossAtkPos[index].transform.position, movementSpeed);
+            transform.position = Vector3.MoveTowards(transform.position,bossAtkPos[index].transform.position, movementSpeed);   //Boss object moves towards on ofe the four cardinal points
         }
         yield return new WaitForSeconds(1);
 
-        myRenderer.color = attackColour;
+        myRenderer.color = attackColour;                        //changes colour to indicate attacking
         yield return new WaitForSeconds(0.5f);
 
-        myRenderer.color = idleColour;
+        myRenderer.color = idleColour;                          //changes colour to indicate attacking
         yield return new WaitForSeconds(0.5f);
 
-        transform.position = Vector3.MoveTowards(transform.position,targetPlayer.transform.position, 5);
+        transform.position = Vector3.MoveTowards(transform.position,targetPlayer.transform.position, movementSpeed);            //boss object dashes towards player
+        index = Random.Range(0,bossAtkPos.Length);
+        bossNxtPos = bossAtkPos[index];                        
         attack1 = false;
 
         yield return StartCoroutine(BossIdleCoroutine());
