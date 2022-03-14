@@ -43,7 +43,6 @@ public class BossMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        step = Time.deltaTime*movementSpeed;
 
     }
 
@@ -54,11 +53,13 @@ public class BossMovement : MonoBehaviour
             {
                 case State.Idle:
                     StartCoroutine(BossIdleCoroutine());
+                    index = Random.Range(0,bossAtkPos.Length);
                     BossStates(State.MeeleCharge);
                     break;
 
                 case State.MeeleCharge:
                     StartCoroutine(BossAttack1Coroutine());
+                    index = Random.Range(0,bossAtkPos.Length);
                     BossStates(State.Idle);
                     break;
 
@@ -76,7 +77,7 @@ public class BossMovement : MonoBehaviour
 
         yield return new WaitForSeconds(3);
 
-        transform.position = Vector3.MoveTowards(transform.position,targetPlayer.transform.position, step);
+        transform.position = Vector3.MoveTowards(transform.position,targetPlayer.transform.position, movementSpeed);
         idleState = false;
 
         yield return null;
@@ -87,10 +88,8 @@ public class BossMovement : MonoBehaviour
         attack1 = true;
         while(transform.position != bossAtkPos[index].transform.position)
         {
-            transform.position = Vector3.MoveTowards(transform.position,bossAtkPos[index].transform.position, step);
+            transform.position = Vector3.MoveTowards(transform.position,bossAtkPos[index].transform.position, movementSpeed);
         }
-
-        index = Random.Range(0,4);
         yield return new WaitForSeconds(1);
 
         myRenderer.color = attackColour;

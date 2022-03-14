@@ -6,7 +6,7 @@ public class PlayerController : MonoBehaviour
 {
     public float moveSpeed;
 
-    public static float playerHP = 100;
+    public float playerHP = 100;
     // Start is called before the first frame update
     void Start()
     {
