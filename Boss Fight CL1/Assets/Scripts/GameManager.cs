@@ -11,16 +11,6 @@ public class GameManager : MonoBehaviour
     {
         return instance;
     }
-
-    public GameObject bossEnemy;
-
-    public enum State 
-    {
-        Idle,
-        Prep,
-        FireatPlayer,
-        MeeleCharge
-    }
     void Start()
     {
         
