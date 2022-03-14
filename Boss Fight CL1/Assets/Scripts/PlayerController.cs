@@ -6,7 +6,6 @@ public class PlayerController : MonoBehaviour
 {
     public float moveSpeed;
 
-    public float playerHP = 100;
     // Start is called before the first frame update
     void Start()
     {
@@ -27,14 +26,6 @@ public class PlayerController : MonoBehaviour
         if(Input.GetKey(key))
         {
             GetComponent<Rigidbody2D>().velocity = new Vector3(xMove, yMove, 0);
-        }
-    }
-
-    private void OnCollisionEnter(Collision other) 
-    {
-        if(other.gameObject.name == "Boss")
-        {
-            playerHP = playerHP - 15;
         }
     }
 }

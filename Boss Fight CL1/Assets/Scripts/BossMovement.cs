@@ -13,7 +13,6 @@ public class BossMovement : MonoBehaviour
     private int index;
 
     public float movementSpeed;
-    private float step;
     public Color idleColour;
     public Color attackColour;
 
@@ -54,17 +53,19 @@ public class BossMovement : MonoBehaviour
                 case State.Idle:
                     StartCoroutine(BossIdleCoroutine());
                     index = Random.Range(0,bossAtkPos.Length);
+                    bossNxtPos = bossAtkPos[index];
                     BossStates(State.MeeleCharge);
                     break;
 
                 case State.MeeleCharge:
                     StartCoroutine(BossAttack1Coroutine());
                     index = Random.Range(0,bossAtkPos.Length);
+                    bossNxtPos = bossAtkPos[index];
                     BossStates(State.Idle);
                     break;
 
                 default:
-                    Debug.Log("No State available for this as yet");
+                    //Debug.Log("No State available for this as yet");
                     break;
             }
         }
@@ -79,8 +80,9 @@ public class BossMovement : MonoBehaviour
 
         transform.position = Vector3.MoveTowards(transform.position,targetPlayer.transform.position, movementSpeed);
         idleState = false;
+    
 
-        yield return null;
+        yield return StartCoroutine(BossAttack1Coroutine());
     }
 
     IEnumerator BossAttack1Coroutine()
@@ -91,12 +93,6 @@ public class BossMovement : MonoBehaviour
             transform.position = Vector3.MoveTowards(transform.position,bossAtkPos[index].transform.position, movementSpeed);
         }
         yield return new WaitForSeconds(1);
-
-        myRenderer.color = attackColour;
-        yield return new WaitForSeconds(0.5f);
-
-        myRenderer.color = idleColour;
-        yield return new WaitForSeconds(0.5f);
 
         myRenderer.color = attackColour;
         yield return new WaitForSeconds(0.5f);
