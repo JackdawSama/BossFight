@@ -5,6 +5,7 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     public float moveSpeed;
+    public int health = 4;
 
     // Start is called before the first frame update
     void Start()
@@ -20,6 +21,7 @@ public class PlayerController : MonoBehaviour
         Move(KeyCode.S, 0, -moveSpeed);
         Move(KeyCode.A, -moveSpeed, 0);
         Move(KeyCode.D, moveSpeed, 0);
+
     }
 
     //function to move the player character
@@ -29,5 +31,16 @@ public class PlayerController : MonoBehaviour
         {
             GetComponent<Rigidbody2D>().velocity = new Vector3(xMove, yMove, 0);
         }
+    }
+
+    private void OnCollisionEnter2D(Collision2D other) 
+    {
+        if( other.gameObject.tag == "Enemy")
+        if(health < 1)
+        {
+            Destroy(gameObject);
+        }
+        health--;
+
     }
 }

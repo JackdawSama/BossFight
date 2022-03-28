@@ -52,14 +52,14 @@ public class BossMovement : MonoBehaviour
             {
                 case State.Idle:
                     StartCoroutine(BossIdleCoroutine());
-                    BossStates(State.MeeleCharge);
+                    //BossStates(State.MeeleCharge);
                     break;
 
                 case State.MeeleCharge:
                     StartCoroutine(BossAttack1Coroutine());
                     index = Random.Range(0,bossAtkPos.Length);
                     bossNxtPos = bossAtkPos[index];
-                    BossStates(State.Idle);
+                    //BossStates(State.Idle);
                     break;
 
                 default:
@@ -81,9 +81,9 @@ public class BossMovement : MonoBehaviour
         index = Random.Range(0,bossAtkPos.Length);
         bossNxtPos = bossAtkPos[index];
         idleState = false;
-    
+        BossStates(State.MeeleCharge);
 
-        yield return StartCoroutine(BossAttack1Coroutine());                                                            //Makes sure that the coroutine loops
+        // yield return StartCoroutine(BossAttack1Coroutine());                                                            //Makes sure that the coroutine loops
     }
 
     //Coroutine for the Boss' attack state
@@ -108,6 +108,7 @@ public class BossMovement : MonoBehaviour
         bossNxtPos = bossAtkPos[index];                        
         attack1 = false;
 
-        yield return StartCoroutine(BossIdleCoroutine());
+        BossStates(State.Idle);
+        // yield return StartCoroutine(BossIdleCoroutine());
     }
 }
