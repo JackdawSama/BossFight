@@ -34,9 +34,9 @@ public class BossMovement : MonoBehaviour
     void Start()
     {
         myManager = GameManager.FindInstance();
-        index = Random.Range(0,bossAtkPos.Length);
-        bossNxtPos = bossAtkPos[index];
-        BossStates(State.Idle);
+        index = Random.Range(0,bossAtkPos.Length);                      //randomises boss position index value
+        bossNxtPos = bossAtkPos[index];                                 //sets which posiion to take before attacking
+        BossStates(State.Idle);                                         //boots idle state
     }
 
     // Update is called once per frame
@@ -50,40 +50,45 @@ public class BossMovement : MonoBehaviour
             currentState = newState;
             switch(newState)
             {
-                case State.Idle:
+                case State.Idle:                                            //first idle to atack state of boss
                     StartCoroutine(BossIdleCoroutine());
-                    //BossStates(State.MeeleCharge);
                     break;
 
                 case State.MeeleCharge:
-                    StartCoroutine(BossAttack1Coroutine());
-                    index = Random.Range(0,bossAtkPos.Length);
-                    bossNxtPos = bossAtkPos[index];
-                    //BossStates(State.Idle);
+                    StartCoroutine(BossAttack1Coroutine());                 //attack variation of the boss
+                    index = Random.Range(0,bossAtkPos.Length);              //randomises index to switch position 
+                    bossNxtPos = bossAtkPos[index];                         //Sets the next posiiton of the boss
                     break;
 
                 default:
-                    //Debug.Log("No State available for this as yet");
+                    Debug.Log("No State available for this as yet");
                     break;
             }
         }
     }
 
 
-    //Coroutine for the Boss' idle time.
+    //Coroutine for the Boss' idle to atack state
     IEnumerator BossIdleCoroutine()
     {
         idleState = true;
 
         yield return new WaitForSeconds(3);
-        
-        transform.position = Vector3.MoveTowards(transform.position,targetPlayer.transform.position, movementSpeed);    //Boss object dashes towards player
+
+        Vector3 playerSnapshot = targetPlayer.transform.position;
+
+        while(Vector3.Distance(transform.position,playerSnapshot) >= 0.5f)
+        {
+            Debug.Log("In Idle While Loop");
+            float step = movementSpeed*Time.deltaTime;
+            transform.position = Vector3.MoveTowards(transform.position,playerSnapshot, step);    //Boss object dashes towards player
+            yield return null;
+        }
         index = Random.Range(0,bossAtkPos.Length);
         bossNxtPos = bossAtkPos[index];
         idleState = false;
-        BossStates(State.MeeleCharge);
-
-        // yield return StartCoroutine(BossAttack1Coroutine());                                                            //Makes sure that the coroutine loops
+        yield return new WaitForSeconds(1.5f);                                                      // window to leave boss vulnerable for an attack from the player
+        BossStates(State.MeeleCharge);                                                              //calls the next state so that the boss moves into anoher atack pattern
     }
 
     //Coroutine for the Boss' attack state
@@ -91,10 +96,16 @@ public class BossMovement : MonoBehaviour
     IEnumerator BossAttack1Coroutine()
     {
         attack1 = true;
+
+        float step = movementSpeed*Time.deltaTime;
+
+        Debug.Log("Entered Attack While Loop)");
+
         while(transform.position != bossAtkPos[index].transform.position)
-        {
-            transform.position = Vector3.MoveTowards(transform.position,bossAtkPos[index].transform.position, movementSpeed);   //Boss object moves towards on ofe the four cardinal points
-        }
+            {
+                transform.position = Vector3.MoveTowards(transform.position,bossAtkPos[index].transform.position, step);   //Boss object moves towards on ofe the four cardinal points
+                yield return null;
+            }
         yield return new WaitForSeconds(1);
 
         myRenderer.color = attackColour;                        //changes colour to indicate attacking
@@ -103,12 +114,12 @@ public class BossMovement : MonoBehaviour
         myRenderer.color = idleColour;                          //changes colour to indicate attacking
         yield return new WaitForSeconds(0.5f);
 
-        transform.position = Vector3.MoveTowards(transform.position,targetPlayer.transform.position, movementSpeed);            //boss object dashes towards player
+        Vector3 playerSnapshot = targetPlayer.transform.position;
+        transform.position = Vector3.MoveTowards(transform.position,playerSnapshot, step);      //boss object dashes towards player
         index = Random.Range(0,bossAtkPos.Length);
         bossNxtPos = bossAtkPos[index];                        
         attack1 = false;
 
-        BossStates(State.Idle);
-        // yield return StartCoroutine(BossIdleCoroutine());
+        BossStates(State.Idle);                                 //switches back to another state so that the attack pattern continues
     }
 }
