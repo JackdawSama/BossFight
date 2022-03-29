@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class BossMovement : MonoBehaviour
 {
@@ -13,12 +14,12 @@ public class BossMovement : MonoBehaviour
     private int index;
 
     public float movementSpeed;
+    public int health = 100;
     public Color idleColour;
     public Color attackColour;
 
     private bool idleState;
     private bool attack1;
-    private bool attack2;
 
     public Transform[] bossAtkPos;
     private Transform bossNxtPos;
@@ -27,7 +28,6 @@ public class BossMovement : MonoBehaviour
     {
         Idle,
         MeeleCharge,
-        MeeleCharge2,
     }
     State currentState;
     // Start is called before the first frame update
@@ -75,9 +75,9 @@ public class BossMovement : MonoBehaviour
 
         yield return new WaitForSeconds(3);
 
-        Vector3 playerSnapshot = targetPlayer.transform.position;
+        Vector3 playerSnapshot = targetPlayer.transform.position;                               //stores the player's position to attack
 
-        while(Vector3.Distance(transform.position,playerSnapshot) >= 0.5f)
+        while(Vector3.Distance(transform.position,playerSnapshot) >= 0.5f)                      //sets a while loop which causes the boss to move towards the player perfectly
         {
             Debug.Log("In Idle While Loop");
             float step = movementSpeed*Time.deltaTime;
@@ -114,12 +114,28 @@ public class BossMovement : MonoBehaviour
         myRenderer.color = idleColour;                          //changes colour to indicate attacking
         yield return new WaitForSeconds(0.5f);
 
-        Vector3 playerSnapshot = targetPlayer.transform.position;
+        Vector3 playerSnapshot = targetPlayer.transform.position;                               //stores the player's position to attack
         transform.position = Vector3.MoveTowards(transform.position,playerSnapshot, step);      //boss object dashes towards player
         index = Random.Range(0,bossAtkPos.Length);
         bossNxtPos = bossAtkPos[index];                        
         attack1 = false;
 
         BossStates(State.Idle);                                 //switches back to another state so that the attack pattern continues
+    }
+
+    //function for boss death state and damage
+    private void OnCollisionEnter2D(Collision2D other) {
+        if(other.gameObject.tag == "Bullet")
+        {
+            if(health < 1)
+            {
+                Destroy(gameObject);
+                SceneManager.LoadScene("Win");
+            }
+            else
+            {
+                health = health - 5;
+            }
+        }
     }
 }
